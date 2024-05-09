@@ -45,7 +45,7 @@ const App = () => {
                     </Text>
                 </Box>
                 <Box alignSelf='center'>
-                    <Text bold>Donate 0x938c6bd70E152b261735F6CDc6E5be075feD4664 | Support & suggestions -  Telegram: <Text color={'blueBright'}>@i_66_77</Text></Text>
+                    <Text bold>Donate(Any EVM) 0x938c6bd70E152b261735F6CDc6E5be075feD4664 | Support & suggestions - Telegram: <Text color={'blueBright'}>@i_66_77</Text></Text>
                 </Box>
             </Box>
             {screen === 'main' && <MainScreen changeScreen={setScreen} />}

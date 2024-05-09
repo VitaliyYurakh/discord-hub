@@ -48,7 +48,7 @@ const App = () => {
     alignSelf: "center"
   }, /*#__PURE__*/React.createElement(Text, {
     bold: true
-  }, "Donate 0x938c6bd70E152b261735F6CDc6E5be075feD4664 | Support & suggestions -  Telegram: ", /*#__PURE__*/React.createElement(Text, {
+  }, "Donate(Any EVM) 0x938c6bd70E152b261735F6CDc6E5be075feD4664 | Support & suggestions - Telegram: ", /*#__PURE__*/React.createElement(Text, {
     color: 'blueBright'
   }, "@i_66_77")))), screen === 'main' && /*#__PURE__*/React.createElement(MainScreen, {
     changeScreen: setScreen
