@@ -54,7 +54,7 @@
 
 Как только вы скачаете проект, **убедитесь**, что у вас есть Node JS v20.11 или выше
 
- - [Установка Node JS](https://nodejs.org/en/download/package-manager/) (Вам нужна версия ^20.11)
+ - [Установка Node JS](https://nodejs.org/en/download) (Вам нужна версия ^20.11)
 
 Команда для проверки версии node js:
 
