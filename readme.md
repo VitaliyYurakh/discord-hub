@@ -60,7 +60,7 @@
   node -v
 ```
 
-Установка проекта
+Установка проекта (если скачиваете архив то пропускайте этот пункт)
 
 ```bash
   git clone https://github.com/VitaliyYurakh/discord-hub.git
