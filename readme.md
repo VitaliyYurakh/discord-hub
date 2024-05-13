@@ -57,6 +57,7 @@
  - [Установка Node JS](https://nodejs.org/en/download) (Вам нужна версия ^20.11)
    
 **Все команды выполнять в PowerShell(Windows) или Bash(Linux, MacOS)**
+
 Команда для проверки версии node js:
 
 ```bash
