@@ -20,8 +20,8 @@ import loggerService from './services/loggerService.js'
 loggerService.addLog({ type: 'INFO', msg: 'start program' })
 
 const dirPath = path.dirname(fileURLToPath(import.meta.url))
-const accountsFilePath = path.join(dirPath, './data/accounts_data.xlsx')
-const serverDataPath = path.join(dirPath, './data/spam_msg.xlsx')
+const accountsFilePath = path.join(dirPath, './data/accounts_data.xls')
+const serverDataPath = path.join(dirPath, './data/spam_msg.xls')
 
 const accountsData = excelService.getDataFromFile(accountsFilePath)
 const serverData = excelService.getDataFromFile(serverDataPath)
