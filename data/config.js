@@ -1,7 +1,0 @@
-const MAXIMUM_RETRY = 2
-const SLEEP_TIME = [1000, 5000]
-
-export {
-    SLEEP_TIME,
-    MAXIMUM_RETRY
-}
