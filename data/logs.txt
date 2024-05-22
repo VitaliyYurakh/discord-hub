@@ -1,1 +1,31 @@
 
+20:46:27 22-05-2024 | INFO    | start program
+20:50:16 22-05-2024 | INFO    | start program
+20:50:39 22-05-2024 | INFO    | start program
+20:52:35 22-05-2024 | INFO    | show account info
+20:53:48 22-05-2024 | INFO    | start program
+21:02:14 22-05-2024 | INFO    | start program
+21:07:00 22-05-2024 | INFO    | start program
+21:08:37 22-05-2024 | INFO    | start program
+21:08:54 22-05-2024 | INFO    | start program
+21:09:52 22-05-2024 | INFO    | start program
+21:11:00 22-05-2024 | INFO    | start program
+21:11:24 22-05-2024 | INFO    | start program
+21:11:31 22-05-2024 | INFO    | start program
+21:11:35 22-05-2024 | INFO    | start program
+21:12:05 22-05-2024 | INFO    | start program
+21:12:31 22-05-2024 | INFO    | start program
+21:13:11 22-05-2024 | INFO    | start program
+21:13:14 22-05-2024 | INFO    | start program
+21:13:29 22-05-2024 | INFO    | start program
+21:13:54 22-05-2024 | INFO    | start program
+21:15:20 22-05-2024 | INFO    | start program
+21:15:23 22-05-2024 | INFO    | start program
+21:15:55 22-05-2024 | INFO    | start program
+21:16:16 22-05-2024 | INFO    | start program
+21:17:10 22-05-2024 | INFO    | start program
+21:18:03 22-05-2024 | INFO    | start program
+21:23:21 22-05-2024 | INFO    | start program
+21:24:34 22-05-2024 | INFO    | start program
+21:25:09 22-05-2024 | INFO    | start program
+21:25:47 22-05-2024 | INFO    | start program

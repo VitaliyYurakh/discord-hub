@@ -8,6 +8,7 @@ import path from "path";
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { fileURLToPath } from 'url';
+import base64 from 'base-64';
 import discordService from './services/discordService.js';
 import excelService from './services/excelService.js';
 import parseProxyString from './utils/parseProxyString.js';
@@ -54,6 +55,8 @@ const App = () => {
     changeScreen: setScreen
   }), screen === 'info' && /*#__PURE__*/React.createElement(AccountInfoScreen, {
     changeScreen: setScreen
+  }), screen === 'discord' && /*#__PURE__*/React.createElement(DicordInfoScreen, {
+    changeScreen: setScreen
   }), screen === 'proxy' && /*#__PURE__*/React.createElement(ProxyScreen, {
     changeScreen: setScreen
   }), screen === 'standart' && /*#__PURE__*/React.createElement(DiscrodSpamScreen, {
@@ -90,6 +93,9 @@ const MainScreen = ({
   const mainItems = [{
     label: '# Check accounts info',
     value: 'info'
+  }, {
+    label: '# Discords info',
+    value: 'discord'
   }, {
     label: '# Check proxy',
     value: 'proxy'
@@ -317,6 +323,93 @@ const ProxyScreen = ({
       "frames": ["[    ]", "[=   ]", "[==  ]", "[=== ]", "[====]", "[ ===]", "[  ==]", "[   =]", "[    ]", "[   =]", "[  ==]", "[ ===]", "[====]", "[=== ]", "[==  ]", "[=   ]"]
     }
   }) : /*#__PURE__*/React.createElement(Text, null, statusMsg))) : /*#__PURE__*/React.createElement(Box, null, /*#__PURE__*/React.createElement(Text, null, "No Proxy"))), /*#__PURE__*/React.createElement(Box, {
+    position: "absolute",
+    height: "100%",
+    display: "flex",
+    alignItems: "flex-end"
+  }, /*#__PURE__*/React.createElement(Box, {
+    display: "flex",
+    flexDirection: "column"
+  }, /*#__PURE__*/React.createElement(SelectInput, {
+    indicatorComponent: CustomIndicator,
+    itemComponent: CustomItem,
+    items: items,
+    onSelect: handlerSelectMainScreen
+  }))));
+};
+const DicordInfoScreen = ({
+  changeScreen
+}) => {
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState(0);
+  const [currentData, setCurrentData] = useState([]);
+  const countRow = 10;
+  const maxPage = Math.ceil(data.length / countRow);
+  useInput((_, key) => {
+    if (key.leftArrow) {
+      setPage(prev => prev === 1 ? prev : prev - 1);
+    }
+    if (key.rightArrow) {
+      setPage(prev => prev === maxPage ? prev : prev + 1);
+    }
+  });
+  useEffect(() => {
+    const info = accountsData.map(({
+      Discord_Token,
+      Name
+    }) => {
+      const slicedToken = Discord_Token.split('.')[0];
+      const encodedToken = slicedToken;
+      const id = base64.decode(encodedToken);
+      const date = getCreationDate(id);
+      return {
+        Name,
+        Id: id,
+        Created_Date: date
+      };
+    });
+    setData(info);
+    setPage(1);
+  }, []);
+  useEffect(() => {
+    const end = page * countRow;
+    const start = end - countRow;
+    setCurrentData(data.slice(start, end));
+  }, [page]);
+  const getCreationDate = id => new Date(id / 4194304 + 1420070400000).toUTCString();
+  const items = [{
+    label: '# Back',
+    value: 'back'
+  }];
+  const handlerSelectMainScreen = ({
+    value
+  }) => {
+    if (value === 'back') {
+      changeScreen('main');
+    }
+  };
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Box, {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: 1,
+    marginBottom: 5,
+    flexGrow: 2,
+    width: "100%",
+    padding: 1
+  }, /*#__PURE__*/React.createElement(Box, {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: 1
+  }, /*#__PURE__*/React.createElement(Text, null, "press ", /*#__PURE__*/React.createElement(Text, {
+    bold: true
+  }, "\u2190"), " to flip left | press ", /*#__PURE__*/React.createElement(Text, {
+    bold: true
+  }, "\u2192"), " to flip right")), /*#__PURE__*/React.createElement(Box, {
+    display: "flex",
+    flexGrow: 1
+  }, /*#__PURE__*/React.createElement(Table, {
+    data: currentData
+  })), /*#__PURE__*/React.createElement(Box, null, /*#__PURE__*/React.createElement(Text, null, "Show: ", page * countRow - countRow + 1, " - ", page * countRow > data.length ? data.length : page * countRow, " / ", data.length))), /*#__PURE__*/React.createElement(Box, {
     position: "absolute",
     height: "100%",
     display: "flex",
