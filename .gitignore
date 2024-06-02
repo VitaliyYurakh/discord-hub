@@ -5,7 +5,9 @@
 /.pnp
 .pnp.js
 
-data
+data/accounts_data.xls
+data/logs.txt
+data/spam_msg.xls
 files
 static
 
