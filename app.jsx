@@ -13,7 +13,7 @@ import base64 from 'base-64';
 import discordService from './services/discordService.js'
 import excelService from './services/excelService.js'
 import parseProxyString from './utils/parseProxyString.js'
-import { MAXIMUM_RETRY, SLEEP_TIME } from './data/config.js'
+import { MAXIMUM_RETRY, SLEEP_TIME, RESTART_TIME } from './data/config.js'
 import sleep from './utils/sleep.js'
 import randomNum from './utils/randomNum.js';
 import loggerService from './services/loggerService.js'
@@ -455,6 +455,8 @@ const DiscrodSpamScreen = ({ changeScreen }) => {
     const [isRunnig, setRunnig] = useState(false)
     const [page, setPage] = useState(0)
     const [currentData, setCurrentData] = useState([])
+    const [infinity, setInfinity] = useState(false)
+    const [nextDate, setNextDate] = useState('')
 
     const [goodOperation, setGoodOpeartion] = useState(0)
     const [badOperation, setBadOpeartion] = useState(0)
@@ -494,8 +496,12 @@ const DiscrodSpamScreen = ({ changeScreen }) => {
 
     const items = [
         {
-            label: '# Start random spam',
+            label: '# Start one-time spam',
             value: 'run'
+        },
+        {
+            label: `# Start spam with restart between sessions after ${RESTART_TIME} hours`,
+            value: 'while'
         },
         {
             label: '# Back',
@@ -503,96 +509,131 @@ const DiscrodSpamScreen = ({ changeScreen }) => {
         }
     ];
 
-    const runOperations = async () => {
+    const runOperations = async (infinity = false) => {
+
         const randomizeOperationList = discordService.randomSortOperation(operationList)
         loggerService.addLog({ type: 'INFO', msg: `start send spam msg` })
 
-        const step = Math.round(100 / operationList.length)
-
-        for (let i = 0; i < randomizeOperationList.length; i++) {
-            const {
-                msg,
-                channelId,
-                token,
-                proxy,
-                userAgent,
-                accountName,
-                serverName
-            } = randomizeOperationList[i]
-
-            setLogs(prev => [...prev, {
-                msg: `Sending message - "${msg}" on server - "${serverName}" from account - "${accountName}"`,
-                color: ''
-            }])
-            loggerService.addLog({ type: 'INFO', msg: `Sending message - "${msg}" on server - "${serverName}" from account - "${accountName}"` })
-            let error = 0
-
-            while (error < MAXIMUM_RETRY) {
-                const data = await discordService.sendMsgToChannel({
+        const run = async (infinity = false) => {
+            for (let i = 0; i < randomizeOperationList.length; i++) {
+                const {
                     msg,
                     channelId,
                     token,
                     proxy,
                     userAgent,
-                })
+                    accountName,
+                    serverName
+                } = randomizeOperationList[i]
 
-                if ('code' in data) {
+                setLogs(prev => [...prev, {
+                    msg: `Sending message - "${msg}" on server - "${serverName}" from account - "${accountName}"`,
+                    color: ''
+                }])
+                loggerService.addLog({ type: 'INFO', msg: `Sending message - "${msg}" on server - "${serverName}" from account - "${accountName}"` })
+                let error = 0
+
+                while (error < MAXIMUM_RETRY) {
+                    const data = await discordService.sendMsgToChannel({
+                        msg,
+                        channelId,
+                        token,
+                        proxy,
+                        userAgent,
+                    })
+
+                    if ('code' in data) {
+                        setLogs(prev => [...prev,
+                        {
+                            msg: `Error [${error + 1}/${MAXIMUM_RETRY}]. ${data.message}`,
+                            color: 'red'
+                        }
+                        ])
+                        loggerService.addLog({ type: 'ERROR', msg: data })
+                        const time = randomNum(SLEEP_TIME[0], SLEEP_TIME[1])
+
+                        if (error + 1 !== MAXIMUM_RETRY) {
+                            setLogs(prev => [...prev, {
+                                msg: `Resending message after ${Math.floor(time / 1000)}s`,
+                                color: ''
+                            }])
+                            await sleep(time)
+                        }
+                        error++
+                    } else {
+                        setLogs(prev => [...prev, {
+                            msg: `Message sent successfully`,
+                            color: 'green'
+                        }])
+                        loggerService.addLog({ type: 'SUCCESS', msg: `Message - "${msg}" on server - "${serverName}" from account - "${accountName}" sent successfully` })
+                        break
+                    }
+                }
+
+                if (error) {
+                    setBadOpeartion(prev => prev += 1)
+                } else {
+                    setGoodOpeartion(prev => prev += 1)
+                }
+
+                if (i + 1 !== randomizeOperationList.length) {
+                    const time = randomNum(SLEEP_TIME[0], SLEEP_TIME[1])
                     setLogs(prev => [...prev,
                     {
-                        msg: `Error [${error + 1}/${MAXIMUM_RETRY}]. ${data.message}`,
-                        color: 'red'
+                        msg: '\n' + `Waiting ${Math.floor(time / 1000)}s next account` + '\n\n',
+                        color: ''
                     }
                     ])
-                    loggerService.addLog({ type: 'ERROR', msg: data })
-                    const time = randomNum(SLEEP_TIME[0], SLEEP_TIME[1])
-
-                    if (error + 1 !== MAXIMUM_RETRY) {
-                        setLogs(prev => [...prev, {
-                            msg: `Resending message after ${Math.floor(time / 1000)}s`,
-                            color: ''
-                        }])
-                        await sleep(time)
-                    }
-                    error++
-                } else {
-                    setLogs(prev => [...prev, {
-                        msg: `Message sent successfully`,
-                        color: 'green'
-                    }])
-                    loggerService.addLog({ type: 'SUCCESS', msg: `Message - "${msg}" on server - "${serverName}" from account - "${accountName}" sent successfully` })
-                    break
+                    await sleep(time)
                 }
             }
 
-            if (error) {
-                setBadOpeartion(prev => prev += 1)
-            } else {
-                setGoodOpeartion(prev => prev += 1)
-            }
-
-            if (i + 1 !== randomizeOperationList.length) {
-                const time = randomNum(SLEEP_TIME[0], SLEEP_TIME[1])
-                setLogs(prev => [...prev,
-                {
-                    msg: '\n' + `Waiting ${Math.floor(time / 1000)}s next account` + '\n\n',
-                    color: ''
-                }
-                ])
-                await sleep(time)
+            if (infinity) {
+                setLogs(prev => [...prev, {
+                    msg: '\n\n' + `Spam session ended!\n\n`,
+                    color: 'green'
+                }])
             }
         }
-        setLogs(prev => [...prev, {
-            msg: '\n\n' + `Successefully completed! Waiting 10s to redirect at home!`,
-            color: 'green'
-        }])
-        loggerService.addLog({ type: 'INFO', msg: `end send spam msg` })
-        setTimeout(() => {
-            setRunnig(false)
-            changeScreen('main')
-        }, 10000)
+
+        const changeDate = (milliseconds) => {
+            const nextDate = Date.now() + milliseconds
+            const formatDate = new Date(nextDate).toString()
+            setNextDate(formatDate)
+        }
+
+        if (infinity) {
+            const milliseconds = RESTART_TIME * 3600 * 1000
+            run(true)
+            changeDate(milliseconds)
+            setInterval(() => {
+                run(true)
+                changeDate(milliseconds)
+            }, milliseconds)
+        } else {
+            run()
+        }
+
+        if (!infinity) {
+            setLogs(prev => [...prev, {
+                msg: '\n\n' + `Successefully completed! Waiting 10s to redirect at home!`,
+                color: 'green'
+            }])
+            loggerService.addLog({ type: 'INFO', msg: `end send spam msg` })
+            setTimeout(() => {
+                setRunnig(false)
+                changeScreen('main')
+            }, 10000)
+        }
     }
 
     const handlerSelectMainScreen = ({ value }) => {
+        if (value === 'while' && RESTART_TIME) {
+            setRunnig(true)
+            setInfinity(true)
+            runOperations(true)
+        }
+
         if (value === 'run') {
             setRunnig(true)
             runOperations()
@@ -651,10 +692,17 @@ const DiscrodSpamScreen = ({ changeScreen }) => {
                         />
                     </Box>
                 }
-                {isRunnig &&
+                {isRunnig && !infinity &&
                     <Box padding={1}>
                         <Text>
                             [<Text color={'green'}>{goodOperation}</Text>/<Text color={'red'}>{badOperation}</Text>/{operationList.length}] - success operations / bad operations / all operations
+                        </Text>
+                    </Box>
+                }
+                {infinity &&
+                    <Box padding={1}>
+                        <Text>
+                            Next spam session: {nextDate}
                         </Text>
                     </Box>
                 }

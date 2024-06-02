@@ -3,7 +3,7 @@
   "preferGlobal": true,
   "bin": "./index.js",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
